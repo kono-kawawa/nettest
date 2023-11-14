@@ -4,33 +4,27 @@ LOG_PATH="./mainlog"
 NEW_LOG_PATH="./result"
 CURRENT_DATE=""
 LAST_LOG_CONTENT=""
-TAIL_PID=0
 
-# Tail
-start_tail() {
-    tail -F "$NEW_LOG_FILE" | grep --line-buffered -B 1 -A 1 "hello" &
-    TAIL_PID=$!
+# 로그 파일 변경 사항을 모니터링하고 화면을 clear하는 함수
+monitor_logs() {
+    while true; do
+        if [ -f "$NEW_LOG_FILE" ]; then
+            grep -B 1 -A 1 "hello" "$NEW_LOG_FILE"
+        fi
+        sleep 2
+        clear
+    done
 }
-
-# Tail stop
-stop_tail() {
-    if [ $TAIL_PID -ne 0 ]; then
-        kill $TAIL_PID
-    fi
-}
-
-trap 'stop_tail; exit' INT TERM
 
 while true; do
     DATE_FORMAT=$(date +"%Y%m%d")
 
     if [ "$DATE_FORMAT" != "$CURRENT_DATE" ]; then
-        stop_tail
         CURRENT_DATE="$DATE_FORMAT"
         LOG_FILE="$LOG_PATH/$CURRENT_DATE.log"
         NEW_LOG_FILE="$NEW_LOG_PATH/$CURRENT_DATE.log"
         > "$NEW_LOG_FILE" # 이전 내용 초기화
-        start_tail
+        monitor_logs &
     fi
 
     if [ -f "$LOG_FILE" ]; then
@@ -45,6 +39,5 @@ while true; do
     fi
 
     sleep 2
-    clear
 done
 
