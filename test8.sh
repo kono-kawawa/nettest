@@ -1,13 +1,12 @@
 #!/bin/bash
-#파이널 아님. 이 코드 수정이 필요함 
-
+#얼추 성공. 하지만 쉘에서는 아직 중복되어 보임 
 LOG_PATH="./mainlog"
 NEW_LOG_PATH="./result"
 CURRENT_DATE=""
-LAST_LOG_FILE=""
+LAST_LOG_CONTENT=""
 TAIL_PID=0
 
-# Tail 
+# Tail
 start_tail() {
     tail -F "$NEW_LOG_FILE" &
     TAIL_PID=$!
@@ -30,21 +29,17 @@ while true; do
         CURRENT_DATE="$DATE_FORMAT"
         LOG_FILE="$LOG_PATH/$CURRENT_DATE.log"
         NEW_LOG_FILE="$NEW_LOG_PATH/$CURRENT_DATE.log"
-        LAST_LOG_FILE="$LOG_PATH/$CURRENT_DATE.log.old"
-
-        cp "$LOG_FILE" "$LAST_LOG_FILE" 2>/dev/null || :
+        > "$NEW_LOG_FILE" # 이전 내용 초기화 
         start_tail
     fi
 
     if [ -f "$LOG_FILE" ]; then
-        if [ -f "$LAST_LOG_FILE" ]; then
-            # diff를 사용하여 변경 사항 추출해야하는...데....왜안되농..
-            DIFF_CONTENT=$(diff "$LAST_LOG_FILE" "$LOG_FILE" | grep '^>' | sed 's/^> //')
-            if [ ! -z "$DIFF_CONTENT" ]; then
-                echo "$DIFF_CONTENT" >> "$NEW_LOG_FILE"
-            fi
+        CURRENT_LOG_CONTENT=$(grep -B 1 -A 1 "hello" "$LOG_FILE")
+
+        if [ "$LAST_LOG_CONTENT" != "$CURRENT_LOG_CONTENT" ]; then
+            echo "$CURRENT_LOG_CONTENT" > "$NEW_LOG_FILE"
+            LAST_LOG_CONTENT="$CURRENT_LOG_CONTENT"
         fi
-        cp "$LOG_FILE" "$LAST_LOG_FILE"
     else
         echo "NOT exist $LOG_FILE"
     fi
