@@ -5,7 +5,7 @@ NEW_LOG_PATH="./result"
 CURRENT_DATE=""
 LAST_LOG_CONTENT=""
 
-# 로그 파일 변경 사항을 모니터링하고 화면을 clear하는 함수
+# 결과 좋음. 하지만 추가 필요[clear사용 외 다른것 사용 고려 필요]:
 monitor_logs() {
     while true; do
         if [ -f "$NEW_LOG_FILE" ]; then

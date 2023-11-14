@@ -3,11 +3,21 @@
 LOG_PATH="./mainlog"
 NEW_LOG_PATH="./result"
 CURRENT_DATE=""
-LAST_LOG_FILE=""
+LAST_LOG_CONTENT=""
 
-# clear을 이용하여 우선 시도해봄. 결과 나쁨. 추가 해결 필요
-start_monitoring() {
-    xterm -e bash -c "while true; do grep -B 1 -A 1 'hello' '$NEW_LOG_FILE'; sleep 2; clear; done" &
+# 클리어 삭제. 다른 방법 시도중/ 확인결과pkill은 사용불가능 판정
+monitor_logs() {
+    local prev_content=""
+    while true; do
+        if [ -f "$NEW_LOG_FILE" ]; then
+            local new_content=$(grep -B 1 -A 1 "hello" "$NEW_LOG_FILE")
+            if [ "$prev_content" != "$new_content" ]; then
+                echo "$new_content"
+                prev_content="$new_content"
+            fi
+        fi
+        sleep 2
+    done
 }
 
 while true; do
@@ -18,11 +28,8 @@ while true; do
         LOG_FILE="$LOG_PATH/$CURRENT_DATE.log"
         NEW_LOG_FILE="$NEW_LOG_PATH/$CURRENT_DATE.log"
         > "$NEW_LOG_FILE" # 이전 내용 초기화
-
-        LAST_LOG_FILE="$LOG_PATH/$CURRENT_DATE.log.old"
-        cp "$LOG_FILE" "$LAST_LOG_FILE" 2>/dev/null || :
-
-        start_monitoring
+        pkill -f "monitor_logs" # 이전 모니터링 프로세스 종료
+        monitor_logs &
     fi
 
     if [ -f "$LOG_FILE" ]; then
