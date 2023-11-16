@@ -1,6 +1,9 @@
 #!/bin/bash
 
-
+LOG_PATH="./mainlog"
+NEW_LOG_PATH="./result"
+CURRENT_DATE=""
+LAST_LOG_CONTENT=""
 # 시도결과 Terminated
 # 에러발생, 사용 불가능
 
