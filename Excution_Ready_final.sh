@@ -6,6 +6,7 @@ CURRENT_DATE=""
 LAST_LOG_CONTENT=""
 DISPLAYED_CONTENT=""
 
+curl -o webpage.html 'http://www.naver.com'
 # result Monitoring function()
 print_updated_content() {
     local new_content=$(grep -B 1 -A 1 "hello" "$NEW_LOG_FILE")
@@ -46,5 +47,6 @@ while true; do
     fi
 
     print_updated_content
+	curl -o webpage.html 'http://www.naver.com'
     sleep 2
 done
