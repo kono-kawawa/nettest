@@ -6,7 +6,7 @@ CURRENT_DATE=""                                              LAST_LOG_CONTENT=""
 DISPLAYED_CONTENT=""                                         
 # result main
 print_updated_content() {
-    local new_content=$(grep -B 1 -A 1 "hello" "$NEW_LOG_FILE" | awk '{printf "| %-10s ", $0} END {print "|"}')
+	local new_content=$(grep -B 1 -A 1 "hello" "$NEW_LOG_FILE" | awk '{printf "|     %-10s \n", $0} END {print "|"}')
                                                                  if [ "$DISPLAYED_CONTENT" != "$new_content" ]; then
         clear
                 echo "-------------------------------------"
