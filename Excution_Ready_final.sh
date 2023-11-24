@@ -47,6 +47,6 @@ while true; do
     fi
 
     print_updated_content
-	curl -o webpage.html 'http://www.naver.com'
+
     sleep 2
 done
